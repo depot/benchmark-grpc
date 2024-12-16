@@ -43,5 +43,5 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: /home/runner/.cache/bazel
-          key: bazel
+          key: bazel-${{ hashFiles('.bazelversion', '.bazelrc', 'WORKSPACE', 'WORKSPACE.bazel', 'MODULE.bazel') }}
       - run: bazel build :grpc
