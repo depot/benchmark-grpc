@@ -4,18 +4,6 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  depot-remote-cache:
-    name: Depot with Remote Cache
-    runs-on: depot-ubuntu-24.04
-    defaults:
-      run:
-        working-directory: upstream
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-      - run: bazel build :grpc --jobs=200
-
   depot-cacheless:
     name: Depot Cacheless
     runs-on: depot-ubuntu-24.04
@@ -30,7 +18,48 @@ jobs:
           rm /home/runner/.bazelrc
           bazel build :grpc
 
-  github-local-cache:
+  depot-remote-cache:
+    name: Depot with Remote Cache
+    runs-on: depot-ubuntu-24.04
+    defaults:
+      run:
+        working-directory: upstream
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - run: bazel build :grpc --jobs=200
+
+  github-cacheless:
+    name: Github Cacheless
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: upstream
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - run: |
+          bazel build :grpc
+
+  github-actions-cache:
+    name: Github with Local Cache
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: upstream
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/cache@v3
+        with:
+          path: /home/runner/.cache/bazel
+          key: bazel-${{ hashFiles('upstream/.bazelversion', 'upstream/.bazelrc', 'upstream/WORKSPACE', 'upstream/WORKSPACE.bazel', 'upstream/MODULE.bazel') }}
+      - run: bazel build :grpc
+
+  github-setup-bazel:
     name: Github with Local Cache
     runs-on: ubuntu-24.04
     defaults:
@@ -45,4 +74,4 @@ jobs:
           bazelisk-cache: true
           disk-cache: ${{ github.workflow }}
           repository-cache: true
-      - run: bazel build :grpc --jobs=200
+      - run: bazel build :grpc
