@@ -44,7 +44,7 @@ jobs:
           bazel build :grpc
 
   github-actions-cache:
-    name: Github with Local Cache
+    name: Github with @actions/cache
     runs-on: ubuntu-24.04
     defaults:
       run:
@@ -60,7 +60,7 @@ jobs:
       - run: bazel build :grpc
 
   github-setup-bazel:
-    name: Github with Local Cache
+    name: Github with @bazel-contrib/setup-bazel
     runs-on: ubuntu-24.04
     defaults:
       run:
